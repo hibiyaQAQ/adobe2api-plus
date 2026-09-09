@@ -55,20 +55,20 @@ for (const resolution of ["1K", "2K", "4K"]) {
     imageModels[id] = { id, description: `Firefly GPT Image (${resolution} ${aspectRatio})`, aspectRatio, outputResolution: resolution, upstreamModelId: "gpt-image", upstreamModelVersion: "2" };
   }
 }
-// GPT Image 2.5 Flare / Sunburst（2026-09-08 上线，官网 bundle colligo-image-generation-service
-// 模型目录：modelId 仍为 "gpt-image"，modelVersion 分别为完整字符串
-// "gpt-image-2.5-flare" / "gpt-image-2.5-prism"；后者官网显示名为 "GPT Image 2.5 Sunburst"，
-// "prism" 只是 Adobe 内部代号）。当前官网目录仅开放 3:2 / 1:1 / 2:3 三种比例，且仅 1K 一档，
-// 尺寸沿用 gpt-image-1.5 同款 aspectRatioSizeMap（1536x1024 / 1024x1024 / 1024x1536）。
-const gptImage25Ratios: Record<string, string> = { "3:2": "3x2", "1:1": "1x1", "2:3": "2x3" };
-function registerGptImage25(codename: string, upstreamVersion: string, label: string) {
-  for (const [aspectRatio, suffix] of Object.entries(gptImage25Ratios)) {
-    const id = `gpt-image-2.5-${codename}-1k-${suffix}`;
-    imageModels[id] = { id, description: `Firefly GPT Image 2.5 ${label} (1K ${aspectRatio})`, aspectRatio, outputResolution: "1K", upstreamModelId: "gpt-image", upstreamModelVersion: upstreamVersion };
+// GPT Image 2.5 Flare / Sunburst（2026-09-08 上线）：modelId 仍为 "gpt-image"，modelVersion
+// 分别为完整字符串 "gpt-image-2.5-flare" / "gpt-image-2.5-prism"（后者官网显示名为
+// "GPT Image 2.5 Sunburst"，"prism" 只是 Adobe 内部代号，见官网 bundle
+// colligo-image-generation-service 的模型目录）。官网 UI 目前只在选择器里开放 3:2/1:1/2:3
+// 三种比例、1K 一档，但后端与旧版 gpt-image-2 共用同一套 modelId + 尺寸表，2K/4K 及其余比例
+// 经实测同样可以生成，因此这里直接比照 gpt-image-2 开放全部 9 比例 × 1K/2K/4K。
+for (const resolution of ["1K", "2K", "4K"]) {
+  for (const [aspectRatio, suffix] of Object.entries(imageRatios)) {
+    const flareId = `gpt-image-2.5-flare-${resolution.toLowerCase()}-${suffix}`;
+    imageModels[flareId] = { id: flareId, description: `Firefly GPT Image 2.5 Flare (${resolution} ${aspectRatio})`, aspectRatio, outputResolution: resolution, upstreamModelId: "gpt-image", upstreamModelVersion: "gpt-image-2.5-flare" };
+    const sunburstId = `gpt-image-2.5-sunburst-${resolution.toLowerCase()}-${suffix}`;
+    imageModels[sunburstId] = { id: sunburstId, description: `Firefly GPT Image 2.5 Sunburst (${resolution} ${aspectRatio})`, aspectRatio, outputResolution: resolution, upstreamModelId: "gpt-image", upstreamModelVersion: "gpt-image-2.5-prism" };
   }
 }
-registerGptImage25("flare", "gpt-image-2.5-flare", "Flare");
-registerGptImage25("sunburst", "gpt-image-2.5-prism", "Sunburst");
 
 const videoModels: Record<string, VideoModel> = {};
 for (const duration of [4, 8, 12]) {

@@ -186,13 +186,14 @@ GPT Image（上游 `gpt-image`，版本 `2`）：
 - 示例：`gpt-image-2k-16x9`、`gpt-image-4k-1x1`
 
 GPT Image 2.5 Flare / Sunburst（上游 `gpt-image`，版本分别为 `gpt-image-2.5-flare` / `gpt-image-2.5-prism`；
-Sunburst 是 OpenAI 对外名称，Adobe 内部代号为 `prism`）：
+Sunburst 是 OpenAI 对外名称，Adobe 内部代号为 `prism`。官网选择器目前只展示 3:2/1:1/2:3、1K 一档，
+但后端与 `gpt-image`（版本 `2`）共用同一套尺寸表，2K/4K 及其余比例经实测同样可用，故这里比照
+`gpt-image` 开放全部组合，实际是否可用以上游返回为准）：
 
-- 命名：`gpt-image-2.5-flare-1k-{ratio}` / `gpt-image-2.5-sunburst-1k-{ratio}`
-- 分辨率：目前官网目录仅开放 `1k`
-- 比例后缀：`3x2` / `1x1` / `2x3`（官网目录暂未开放其余比例）
-- 示例：`gpt-image-2.5-flare-1k-1x1`、`gpt-image-2.5-sunburst-1k-3x2`
-- 也可直接传裸模型名 `gpt-image-2.5-flare` / `gpt-image-2.5-sunburst`（默认落到 `1:1`），配合 `aspect_ratio` 参数显式指定 `3:2`/`1:1`/`2:3` 中的一种
+- 命名：`gpt-image-2.5-flare-{res}-{ratio}` / `gpt-image-2.5-sunburst-{res}-{ratio}`
+- 分辨率：`1k` / `2k` / `4k`
+- 示例：`gpt-image-2.5-flare-2k-16x9`、`gpt-image-2.5-sunburst-4k-1x1`
+- 也可直接传裸模型名 `gpt-image-2.5-flare` / `gpt-image-2.5-sunburst`（默认落到 `1k-16x9`）
 
 > `aspect_ratio=auto` **不支持**，请求传入 `auto` 会回退为 `1:1`，请显式传具体比例或使用带比例后缀的模型 ID。默认模型为 `nano-banana-pro-2k-16x9`。
 

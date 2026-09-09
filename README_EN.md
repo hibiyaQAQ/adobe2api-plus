@@ -184,13 +184,15 @@ GPT Image (upstream `gpt-image`, version `2`):
 - Examples: `gpt-image-2k-16x9`, `gpt-image-4k-1x1`
 
 GPT Image 2.5 Flare / Sunburst (upstream `gpt-image`, versions `gpt-image-2.5-flare` / `gpt-image-2.5-prism`
-respectively; "Sunburst" is OpenAI's public name, Adobe's internal codename is `prism`):
+respectively; "Sunburst" is OpenAI's public name, Adobe's internal codename is `prism`. Firefly's own
+picker only surfaces 3:2/1:1/2:3 at 1K, but the backend shares the same size table as `gpt-image`
+(version `2`), and 2K/4K plus the other ratios have been confirmed to work in practice, so this mirrors
+`gpt-image`'s full set — actual availability is ultimately whatever the upstream accepts):
 
-- Naming: `gpt-image-2.5-flare-1k-{ratio}` / `gpt-image-2.5-sunburst-1k-{ratio}`
-- Resolutions: only `1k` is currently exposed in Firefly's catalog
-- Ratio suffixes: `3x2` / `1x1` / `2x3` (no other ratios are exposed yet)
-- Examples: `gpt-image-2.5-flare-1k-1x1`, `gpt-image-2.5-sunburst-1k-3x2`
-- A bare model name (`gpt-image-2.5-flare` / `gpt-image-2.5-sunburst`) also works and defaults to `1:1`; pass `aspect_ratio` explicitly for `3:2`/`1:1`/`2:3`
+- Naming: `gpt-image-2.5-flare-{res}-{ratio}` / `gpt-image-2.5-sunburst-{res}-{ratio}`
+- Resolutions: `1k` / `2k` / `4k`
+- Examples: `gpt-image-2.5-flare-2k-16x9`, `gpt-image-2.5-sunburst-4k-1x1`
+- A bare model name (`gpt-image-2.5-flare` / `gpt-image-2.5-sunburst`) also works and defaults to `1k-16x9`
 
 > `aspect_ratio=auto` is **not supported**; passing `auto` falls back to `1:1`. Pass an explicit ratio or use a model ID with a ratio suffix. The default model is `nano-banana-pro-2k-16x9`.
 

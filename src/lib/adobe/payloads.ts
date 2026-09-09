@@ -188,15 +188,6 @@ function gptPixels(aspectRatio: string, resolution: string) {
   return (map[resolution.toUpperCase()] ?? map["2K"])[aspectRatio];
 }
 
-// GPT Image 2.5 Flare / Sunburst 官网目录 aspectRatioSizeMap（同 gpt-image-1.5，仅 3:2/1:1/2:3
-// 三种比例，且只有 1K 一档；modelVersion 为完整字符串 gpt-image-2.5-flare / gpt-image-2.5-prism）。
-const GPT_IMAGE_25_VERSIONS = new Set(["gpt-image-2.5-flare", "gpt-image-2.5-prism"]);
-const GPT_IMAGE_25_PIXELS: Record<string, { width: number; height: number }> = {
-  "3:2": { width: 1536, height: 1024 },
-  "1:1": { width: 1024, height: 1024 },
-  "2:3": { width: 1024, height: 1536 },
-};
-
 export function buildImagePayloads(input: {
   prompt: string;
   modelId?: string;
@@ -221,8 +212,7 @@ export function buildImagePayloads(input: {
   const count = Math.max(1, Math.floor(input.n ?? 1));
   const seeds = Array.from({ length: count }, () => randomInt(0, 1_000_000));
   if (upstreamId === "gpt-image") {
-    const isGptImage25 = GPT_IMAGE_25_VERSIONS.has(upstreamVersion);
-    const pixels = explicitDimensions(input.width, input.height) ?? (isGptImage25 ? GPT_IMAGE_25_PIXELS[ratio] : gptPixels(ratio, resolution));
+    const pixels = explicitDimensions(input.width, input.height) ?? gptPixels(ratio, resolution);
     if (!pixels) throw new Error(`unsupported gpt-image ratio: ${ratio}`);
     // 官网 quality→detailLevel 映射 low:1 / medium:3 / high:5（bundle 模块 158002 Ag）；
     // 未传 quality 时按系统约定默认 high（原 gptImageQuality 配置已移除）。
@@ -237,8 +227,7 @@ export function buildImagePayloads(input: {
       referenceBlobs: [],
       generationMetadata: { module: "text2image", submodule: "ff-image-generate" },
       modelSpecificPayload: { size: `${pixels.width}x${pixels.height}` },
-      // Flare/Sunburst 官网目录仅 1K 一档，忽略请求的 2K/4K 档位。
-      outputResolution: isGptImage25 ? "1K" : resolution,
+      outputResolution: resolution,
       generationSettings: { detailLevel },
       size: pixels,
     } as Record<string, unknown>;

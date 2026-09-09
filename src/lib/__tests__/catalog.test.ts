@@ -18,12 +18,13 @@ describe("model catalog", () => {
     expect(resolveImageOptions({ model: "gpt-image-2k-16x9", aspect_ratio: "1:1", output_resolution: "1K" })).toMatchObject({ aspectRatio: "1:1", outputResolution: "1K" });
   });
 
-  it("registers GPT Image 2.5 Flare/Sunburst at their supported 1K ratios only", () => {
-    for (const suffix of ["3x2", "1x1", "2x3"]) {
-      expect(IMAGE_MODEL_CATALOG[`gpt-image-2.5-flare-1k-${suffix}`]).toMatchObject({ upstreamModelId: "gpt-image", upstreamModelVersion: "gpt-image-2.5-flare", outputResolution: "1K" });
-      expect(IMAGE_MODEL_CATALOG[`gpt-image-2.5-sunburst-1k-${suffix}`]).toMatchObject({ upstreamModelId: "gpt-image", upstreamModelVersion: "gpt-image-2.5-prism", outputResolution: "1K" });
+  it("registers GPT Image 2.5 Flare/Sunburst across all gpt-image ratios and resolutions", () => {
+    for (const resolution of ["1k", "2k", "4k"]) {
+      for (const suffix of ["1x1", "16x9", "9x16", "4x3", "3x4", "5x4", "4x5", "3x2", "21x9", "2x3"]) {
+        expect(IMAGE_MODEL_CATALOG[`gpt-image-2.5-flare-${resolution}-${suffix}`]).toMatchObject({ upstreamModelId: "gpt-image", upstreamModelVersion: "gpt-image-2.5-flare", outputResolution: resolution.toUpperCase() });
+        expect(IMAGE_MODEL_CATALOG[`gpt-image-2.5-sunburst-${resolution}-${suffix}`]).toMatchObject({ upstreamModelId: "gpt-image", upstreamModelVersion: "gpt-image-2.5-prism", outputResolution: resolution.toUpperCase() });
+      }
     }
-    expect(IMAGE_MODEL_CATALOG["gpt-image-2.5-flare-1k-16x9"]).toBeUndefined();
   });
 
   it("publishes separate Kling3 and Kling O3 resolution variants", () => {

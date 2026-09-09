@@ -25,26 +25,45 @@ describe("cross-provider media compatibility", () => {
     expect(edit).toMatchObject({ protocol: "openai-edits", images: ["data:image/webp;base64,c291cmNl"], mask: "data:image/png;base64,bWFzaw==" });
   });
 
-  it("maps GPT Image 2.5 Flare/Sunburst bare aliases to their 1K square default", () => {
+  it("maps GPT Image 2.5 Flare/Sunburst bare aliases to the same 1K 16:9 default as gpt-image", () => {
     const flare = normalizeImageRequest({ model: "gpt-image-2.5-flare", prompt: "a neon skyline" });
-    expect(flare).toMatchObject({ model: "gpt-image-2.5-flare-1k-1x1", aspect_ratio: "1:1", output_resolution: "1K" });
+    expect(flare).toMatchObject({ model: "gpt-image-2.5-flare-1k-16x9", aspect_ratio: "16:9", output_resolution: "1K" });
     expect(buildImagePayloads({
       modelId: flare.model,
       prompt: flare.prompt,
       aspectRatio: flare.aspect_ratio,
       outputResolution: flare.output_resolution,
       n: flare.n,
-    })[0]).toMatchObject({ modelId: "gpt-image", modelVersion: "gpt-image-2.5-flare", size: { width: 1024, height: 1024 } });
+    })[0]).toMatchObject({ modelId: "gpt-image", modelVersion: "gpt-image-2.5-flare", size: { width: 1280, height: 720 } });
 
     const sunburst = normalizeImageRequest({ model: "gpt-image-2.5-sunburst", prompt: "a studio product shot", aspect_ratio: "3:2" });
-    expect(sunburst).toMatchObject({ model: "gpt-image-2.5-sunburst-1k-1x1", aspect_ratio: "3:2", output_resolution: "1K" });
+    expect(sunburst).toMatchObject({ model: "gpt-image-2.5-sunburst-1k-16x9", aspect_ratio: "3:2", output_resolution: "1K" });
     expect(buildImagePayloads({
       modelId: sunburst.model,
       prompt: sunburst.prompt,
       aspectRatio: sunburst.aspect_ratio,
       outputResolution: sunburst.output_resolution,
       n: sunburst.n,
-    })[0]).toMatchObject({ modelId: "gpt-image", modelVersion: "gpt-image-2.5-prism", size: { width: 1536, height: 1024 } });
+    })[0]).toMatchObject({ modelId: "gpt-image", modelVersion: "gpt-image-2.5-prism", size: { width: 1248, height: 832 } });
+  });
+
+  it("honors 2K/4K output_resolution for GPT Image 2.5 Flare/Sunburst, not just the officially listed 1K", () => {
+    const flare2k = normalizeImageRequest({ model: "gpt-image-2.5-flare-1k-1x1", prompt: "a portrait", output_resolution: "2K" });
+    expect(flare2k).toMatchObject({ model: "gpt-image-2.5-flare-1k-1x1", output_resolution: "2K" });
+    expect(buildImagePayloads({
+      modelId: flare2k.model,
+      prompt: flare2k.prompt,
+      aspectRatio: flare2k.aspect_ratio,
+      outputResolution: flare2k.output_resolution,
+      n: flare2k.n,
+    })[0]).toMatchObject({ modelId: "gpt-image", modelVersion: "gpt-image-2.5-flare", outputResolution: "2K", size: { width: 2048, height: 2048 } });
+
+    expect(buildImagePayloads({
+      modelId: "gpt-image-2.5-sunburst-4k-1x1",
+      prompt: "a portrait",
+      aspectRatio: "1:1",
+      outputResolution: "4K",
+    })[0]).toMatchObject({ modelId: "gpt-image", modelVersion: "gpt-image-2.5-prism", outputResolution: "4K", size: { width: 2880, height: 2880 } });
   });
 
   it("accepts Kling-shaped requests for a Jimeng/Seedance model", () => {
