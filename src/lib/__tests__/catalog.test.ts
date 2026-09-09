@@ -1,4 +1,4 @@
-import { DEFAULT_MODEL_ID, publicModelList, referenceLimitsForVideo, resolveImageOptions, VIDEO_MODEL_CATALOG } from "@/lib/catalog";
+import { DEFAULT_MODEL_ID, IMAGE_MODEL_CATALOG, publicModelList, referenceLimitsForVideo, resolveImageOptions, VIDEO_MODEL_CATALOG } from "@/lib/catalog";
 
 describe("model catalog", () => {
   it("publishes the default model and deterministic ratio options", () => {
@@ -16,6 +16,15 @@ describe("model catalog", () => {
 
   it("honors normalized explicit image dimensions over catalog defaults", () => {
     expect(resolveImageOptions({ model: "gpt-image-2k-16x9", aspect_ratio: "1:1", output_resolution: "1K" })).toMatchObject({ aspectRatio: "1:1", outputResolution: "1K" });
+  });
+
+  it("registers GPT Image 2.5 Flare/Sunburst across all gpt-image ratios and resolutions", () => {
+    for (const resolution of ["1k", "2k", "4k"]) {
+      for (const suffix of ["1x1", "16x9", "9x16", "4x3", "3x4", "5x4", "4x5", "3x2", "21x9", "2x3"]) {
+        expect(IMAGE_MODEL_CATALOG[`gpt-image-2.5-flare-${resolution}-${suffix}`]).toMatchObject({ upstreamModelId: "gpt-image", upstreamModelVersion: "gpt-image-2.5-flare", outputResolution: resolution.toUpperCase() });
+        expect(IMAGE_MODEL_CATALOG[`gpt-image-2.5-sunburst-${resolution}-${suffix}`]).toMatchObject({ upstreamModelId: "gpt-image", upstreamModelVersion: "gpt-image-2.5-prism", outputResolution: resolution.toUpperCase() });
+      }
+    }
   });
 
   it("publishes separate Kling3 and Kling O3 resolution variants", () => {
