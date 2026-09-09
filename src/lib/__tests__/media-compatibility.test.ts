@@ -25,6 +25,28 @@ describe("cross-provider media compatibility", () => {
     expect(edit).toMatchObject({ protocol: "openai-edits", images: ["data:image/webp;base64,c291cmNl"], mask: "data:image/png;base64,bWFzaw==" });
   });
 
+  it("maps GPT Image 2.5 Flare/Sunburst bare aliases to their 1K square default", () => {
+    const flare = normalizeImageRequest({ model: "gpt-image-2.5-flare", prompt: "a neon skyline" });
+    expect(flare).toMatchObject({ model: "gpt-image-2.5-flare-1k-1x1", aspect_ratio: "1:1", output_resolution: "1K" });
+    expect(buildImagePayloads({
+      modelId: flare.model,
+      prompt: flare.prompt,
+      aspectRatio: flare.aspect_ratio,
+      outputResolution: flare.output_resolution,
+      n: flare.n,
+    })[0]).toMatchObject({ modelId: "gpt-image", modelVersion: "gpt-image-2.5-flare", size: { width: 1024, height: 1024 } });
+
+    const sunburst = normalizeImageRequest({ model: "gpt-image-2.5-sunburst", prompt: "a studio product shot", aspect_ratio: "3:2" });
+    expect(sunburst).toMatchObject({ model: "gpt-image-2.5-sunburst-1k-1x1", aspect_ratio: "3:2", output_resolution: "1K" });
+    expect(buildImagePayloads({
+      modelId: sunburst.model,
+      prompt: sunburst.prompt,
+      aspectRatio: sunburst.aspect_ratio,
+      outputResolution: sunburst.output_resolution,
+      n: sunburst.n,
+    })[0]).toMatchObject({ modelId: "gpt-image", modelVersion: "gpt-image-2.5-prism", size: { width: 1536, height: 1024 } });
+  });
+
   it("accepts Kling-shaped requests for a Jimeng/Seedance model", () => {
     const canonical = withCanonicalProtocolModel({
       model_name: "jimeng",

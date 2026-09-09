@@ -624,6 +624,9 @@ function resolveImageForProtocol(modelId: string | undefined, fallback = DEFAULT
     if (/^nano[-_]banana-pro$/i.test(legacy)) return resolveImageModel("nano-banana-pro-2k-16x9");
     if (/^nano[-_]banana2$/i.test(legacy)) return resolveImageModel("nano-banana2-2k-16x9");
     if (/^nano[-_]banana$/i.test(legacy)) return resolveImageModel("nano-banana-2k-16x9");
+    if (/^gpt[-_]image[-_]2\.5[-_]flare$/i.test(legacy)) return resolveImageModel("gpt-image-2.5-flare-1k-1x1");
+    if (/^gpt[-_]image[-_]2\.5[-_](sunburst|prism)$/i.test(legacy)) return resolveImageModel("gpt-image-2.5-sunburst-1k-1x1");
+    if (/^gpt[-_]image[-_]2\.5$/i.test(legacy)) return resolveImageModel("gpt-image-2.5-flare-1k-1x1");
     return resolveImageModel("gpt-image-1k-16x9");
   }
   throw new AppError("invalid_model", "Unsupported image model", 400);
